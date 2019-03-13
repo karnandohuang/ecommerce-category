@@ -2,6 +2,7 @@ package com.training.magang.ecommerce.category.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.training.magang.ecommerce.category.model.ApiKey;
 import com.training.magang.ecommerce.category.model.Category;
 import com.training.magang.ecommerce.category.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class CategoryController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<Category> create(@RequestBody Category category){
+    public Mono<Category> create(@RequestBody Category category, ApiKey apiKey){
         return categoryService.create(category).subscribeOn(Schedulers.elastic());
     }
 
@@ -59,7 +60,7 @@ public class CategoryController {
             method = RequestMethod.PUT,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public Mono<Category> update(@RequestBody Category category){
+    public Mono<Category> update(@RequestBody Category category, ApiKey apiKey){
 
         return categoryService.update(category).subscribeOn(Schedulers.elastic());
     }
@@ -69,7 +70,7 @@ public class CategoryController {
             method = RequestMethod.DELETE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public Mono<Category> delete(@PathVariable("id") Long id){
+    public Mono<Category> delete(@PathVariable("id") Long id, ApiKey apiKey){
 
         return categoryService.delete(id).subscribeOn(Schedulers.elastic());
     }
