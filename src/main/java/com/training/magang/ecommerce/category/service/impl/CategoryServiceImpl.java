@@ -1,62 +1,63 @@
 package com.training.magang.ecommerce.category.service.impl;
 
 import com.training.magang.ecommerce.category.model.Category;
+import com.training.magang.ecommerce.category.repository.CategoryRepository;
 import com.training.magang.ecommerce.category.service.CategoryService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Component
+@Service
 public class CategoryServiceImpl implements CategoryService {
 
-    ArrayList<Category> categories = new ArrayList<>();
+    private CategoryRepository categoryRepository;
 
-    @Override
-    public Category create(Category category) {
-
-        categories.add(category);
-
-        return category;
+    @Autowired
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public Category findById(int id) {
+    public Mono<Category> create(Category category) {
 
-        for (Category category: categories) {
-            if(category.getId() == id){
-                return category;
-            }
-        }
-
-        return null;
+        return categoryRepository.save(category);
     }
 
     @Override
-    public List<Category> findAll() {
-        return categories;
+    public Mono<Category> findById(Long id) {
+
+        return categoryRepository.findById(id);
+
     }
 
     @Override
-    public Category update(Category category) {
+    public Flux<Category> findAll() {
 
-        for (Category cat: categories) {
-            if(cat.getId() == category.getId()){
-                BeanUtils.copyProperties(cat, category);
-                return cat;
-            }
-        }
+        return categoryRepository.findAll();
 
-        return null;
     }
 
     @Override
-    public Category delete(int id) {
-        Category category = findById(id);
+    public Mono<Category> update(Category category) {
 
-        categories.remove(category);
+        return findById(category.getId())
+                .map(category1 -> new Category(category.getId(), category.getName()))
+                .flatMap(category1 -> categoryRepository.save(category1));
 
-        return category;
+    }
+
+    @Override
+    public Mono<Category> delete(Long id) {
+
+        return this.categoryRepository
+                .findById(id)
+                .flatMap(p -> this.categoryRepository.deleteById(id));
     }
 }
